@@ -16,15 +16,33 @@
   </div>
 </template>
 <script setup>
-  import {ref} from 'vue'
+  import {ref, watch,onMounted} from 'vue'
   import PostForm from '../components/PostForm.vue'
   import PostItem from '../components/PostItem.vue'
 
   const newPost = ref('')
 
-  const posts = ref([
-    {id: 1, text:"Мой первый пост", likes: 0}
-  ])
+  const posts = ref([])
+
+  onMounted(()=>{
+    const savedPosts = localStorage.getItem('posts');
+    if(savedPosts){
+      posts.value = JSON.parse(savedPosts)
+    }
+    else{
+      posts.value = [
+        {id:1, text:"Мой первый пост",likes:0}
+      ]
+    }
+  })
+
+  watch(
+    posts, (newPost) =>{
+      localStorage.setItem('posts',JSON.stringify(newPost))
+    },
+    {deep:true}
+  )
+
 
   function addPost(){
     posts.value.unshift({
